@@ -1,0 +1,3 @@
+[submodule "webDSKY"]
+	path = webDSKY
+	url = https://github.com/michaelfranzl/webDSKY.git
