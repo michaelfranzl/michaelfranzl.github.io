@@ -1,3 +1,6 @@
 [submodule "webDSKY"]
 	path = webDSKY
 	url = https://github.com/michaelfranzl/webDSKY.git
+[submodule "clang-wasm-browser-starterpack"]
+	path = clang-wasm-browser-starterpack
+	url = https://github.com/michaelfranzl/clang-wasm-browser-starterpack.git
