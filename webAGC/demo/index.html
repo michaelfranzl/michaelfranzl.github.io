@@ -1,0 +1,177 @@
+<!DOCTYPE html><html><head>
+    <meta charset="utf-8">
+    <title>webAGC Demo</title>
+    <meta name="viewport" content="width=480">
+
+    <link rel="preload" as="font" href="./assets/FuturaRenner-Regular.woff2" crossorigin="">
+
+    <link rel="stylesheet" href="assets/screen-6d33c72d.css">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-1MMMX2TVVR"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-1MMMX2TVVR');
+    </script>
+
+    <!-- <script type="importmap"> -->
+    <!--   { -->
+    <!--     "imports": { -->
+    <!--       "@wasmer/wasi": "./node_modules/@wasmer/wasi/lib/index.esm.js", -->
+    <!--       "@wasmer/wasmfs": "./node_modules/@wasmer/wasmfs/lib/index.esm.js", -->
+    <!--       "webdsky": "./node_modules/webdsky/webDSKY.js" -->
+    <!--     } -->
+    <!--   } -->
+    <!-- </script> -->
+
+    
+  </head>
+
+  <body>
+    <h1>web-AGC Demo</h1>
+
+    <div id="errors"></div>
+
+    <p>
+      This demo is part of
+      <a href="https://github.com/michaelfranzl/webAGC" target="_blank">webAGC</a>,
+      a port of yaAGC (an emulator of the Apollo Guidance Computer from the
+      <a href="https://www.ibiblio.org/apollo/" target="_blank">Virtual AGC Project</a>)
+      to the web platform.
+    </p>
+
+    <hr>
+
+    <h3>AGC emulator (yaAGC)</h3>
+
+    <p>This is a WebAssembly build of yaAGC commit ID <a id="yaAGC_version"></a></p>
+
+    <div>
+      <label>Clock divisor:</label>
+      <select id="clock_divisor">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="4">4</option>
+        <option value="8">8</option>
+        <option value="16">16</option>
+        <option value="32">32</option>
+        <option value="64">64</option>
+        <option value="128">128</option>
+        <option value="256">256</option>
+        <option value="512">512</option>
+        <option value="1024">1024</option>
+        <option value="2048">2048</option>
+        <option value="4096">4096</option>
+        <option value="8192">8192</option>
+        <option value="32768">32768</option>
+        <option value="65536">65536</option>
+        <option value="inf">inf</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Instructions per second:</label>
+      <span id="clock_speed"></span>
+    </div>
+    <div>
+      <label>CPU manipulation:</label>
+      <button id="button_reset">Reset</button>
+      <button id="button_pause">Pause</button>
+      <button id="button_step">Step</button>
+      <button id="button_run">Run</button>
+    </div>
+    <div>
+      <label>State:</label>
+      <span id="agc_state"></span>
+    </div>
+
+
+    <h3>DiSplay and KeYboard (DSKY) of the AGC</h3>
+
+    <div id="dsky">Loading...</div>
+
+    <p>Interact with the DSKY by clicking on its keys, or by typing letters into the input field.
+    (The input field may not work on Chromium for Android because of Chromium bug 118639.)</p>
+    <div>
+      <label>DSKY key input:</label>
+      <input id="dsky_key_input">
+      <br>
+      <small>
+        <kbd>0</kbd>-<kbd>9</kbd>, <kbd>+</kbd>, <kbd>-</kbd>, VERB: <kbd>v</kbd>, NOUN: <kbd>n</kbd>,CLR: <kbd>c</kbd>, KEY REL: <kbd>k</kbd>, ENTR: <kbd>e</kbd> or <kbd>Enter</kbd>, RSET: <kbd>r</kbd>, PRO: <kbd>p</kbd>
+      </small>
+    </div>
+
+    <hr>
+
+    <h3>AGC software</h3>
+
+    <p>
+      For demonstration purposes, you can choose below from three programs:
+    </p>
+
+    <p>
+      <b>Validation.bin:</b> This is a "modern" AGC program originally written by Ronald Burkey to
+      test the AGC emulator. When the "OPR ERR" lamp is blinking, press the <kbd>PRO</kbd> key.
+      After 38 seconds, the number 77 should be displayed in the PROG field. This means that the
+      test suite was successful.
+    </p>
+
+    <p>
+      <b>Luminary099.bin:</b> This is the AGC program used in the Apollo 11 Lunar Module. Aside from
+      being able to land on the Moon, it also can do simple things which are useful for testing.
+      For example:
+      </p><ul>
+        <li>Type <kbd>VERB</kbd> <kbd>3</kbd> <kbd>5</kbd> <kbd>ENTR</kbd>: Lamp test.</li>
+        <li>Type <kbd>VERB</kbd> <kbd>1</kbd> <kbd>6</kbd> <kbd>NOUN</kbd> <kbd>6</kbd> <kbd>5</kbd>
+          <kbd>ENTR</kbd>: Show seconds, minutes and hours since the program has started
+          ('uptime').
+        </li>
+      </ul>
+    <p></p>
+
+    <p>
+      <b>Comanche055.bin:</b> This is the AGC program used in the Apollo 11 Command Module. It
+      implements the same lamp test and time display as Luminary099.
+    </p>
+
+    <p>
+      For more information on these programs, please see
+      <a href="https://www.ibiblio.org/apollo/" target="_blank">the Virtual AGC website</a>.
+    </p>
+
+    <p>
+      <label>Load program into fixed memory:</label>
+      <select name="" id="agc_program_selector">
+        <option></option>
+        <option value="Validation.bin">Validation.bin</option>
+        <option value="Luminary099.bin">Luminary099.bin</option>
+        <option value="Comanche055.bin">Comanche055.bin</option>
+      </select>
+    </p>
+
+    <hr>
+
+    <h2>I/O Channels</h2>
+
+    <h3>Outputs</h3>
+
+    <div id="channels_output"></div>
+
+    <h3>Inputs</h3>
+    <p>Click to toggle, double-click to toggle and latch.</p>
+    <div id="channels_input"></div>
+
+    <hr>
+
+    <h2>Erasable memory</h2>
+    <p>This is a live view on 8 banks of 256 15-bit words of the erasable memory space. Values are
+    displayed in octal notation.  CPU registers are labeled (hover with the mouse to show additional
+    explanations).  Registers 0-7 are flip-flops internal to the CPU and are shaded in
+    green. Registers 0o24-0o60 are "counters" and are shaded in yellow. [See <a href="https://www.ibiblio.org/apollo/assembly_language_manual.html#CPU_Architecture_Registers" target="_blank">VirtualAGC website</a>]
+    </p><div id="agc_erasable_memory"></div>
+  
+
+<script type="module" src="./index-6bc48d9c.js"></script></body></html>
