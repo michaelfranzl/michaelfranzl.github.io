@@ -1,4 +1,3 @@
 # michaelfranzl.github.io
 
-* [webDSKY](webDSKY)
-* [clang-wasm-browser-starterpack](clang-wasm-browser-starterpack)
+Currently the only page is in the webAGC/demo subdirectory.

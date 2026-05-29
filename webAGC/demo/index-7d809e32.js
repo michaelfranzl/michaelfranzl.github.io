@@ -1,4 +1,4 @@
-// This file was generated using the build script of webAGC. See https://github.com/michaelfranzl/webAGC
+// This file was generated using the build script of the webAGC demo. See https://github.com/michaelfranzl/webAGC
 function _classPrivateFieldGet(receiver, privateMap) {
   var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get");
 
@@ -278,22 +278,11 @@ class DskyInterface extends HTMLElement {
       });
       element.addEventListener('mouseup', event => {
         const char = event.target.getAttribute('char');
-
-        if (char === 'o') {
-          if (this.mouseupTimeoutProceedKey) clearTimeout(this.mouseupTimeoutProceedKey);
-          this.mouseupTimeoutProceedKey = setTimeout(() => {
-            this.dispatchEvent(new CustomEvent('proceed', {
-              detail: 1
-            }));
-          }, 250); // T4RUPT in Apollo programs checks the PRO key every 120 ms
-        } else {
-          if (this.mouseupTimeoutNormalKey) clearTimeout(this.mouseupTimeoutNormalKey);
-          this.mouseupTimeoutNormalKey = setTimeout(() => {
-            this.dispatchEvent(new CustomEvent('keypress', {
-              detail: 0
-            }));
-          }, 250);
-        }
+        if (char === 'o') this.dispatchEvent(new CustomEvent('proceed', {
+          detail: 1
+        }));else this.dispatchEvent(new CustomEvent('keypress', {
+          detail: 0
+        }));
       });
     }
   }
@@ -10578,11 +10567,8 @@ class WebAGC {
   }
 
   oscillate(divisor) {
-    const approxFramerate = 60; // The AGC's crystal clock runs at 2.048 MHz. This frequency is divided by 2 for internal
-    // operations. Every 12 ticks of that is the MCT (memory cycling time). The instruction timing
-    // varies from 1 MCT up to 6 MCT, but we have to step yaAGC at 1 MCT.
-
-    const cycleMs = 1000 / (2048000 / 2 / 12); // 1.171875e-05 seconds
+    const approxFramerate = 60;
+    const cycleMs = 0.01172; // 11.72 microseconds per AGC instruction
 
     let startTime = performance.now();
     if (divisor) this.clockDivisor = divisor;
@@ -10877,7 +10863,7 @@ class AGCErasableMemory extends HTMLElement {
     createChild(this.rootEl, 'link', {
       attributes: {
         rel: 'stylesheet',
-        href: new URL(new URL('assets/agc_erasable_memory-0b7893c7.css', import.meta.url).href, import.meta.url)
+        href: new URL(new URL('assets/agc_erasable_memory-b77002c9.css', import.meta.url).href, import.meta.url)
       }
     });
 
@@ -10898,8 +10884,7 @@ class AGCErasableMemory extends HTMLElement {
 
     for (let bankIdx = 0; bankIdx < numBanks; bankIdx++) {
       const bankEl = createChild(this.rootEl, 'div', {
-        classes: ['bank'],
-        id: `bank_${bankIdx}`
+        classes: ['bank']
       });
       const headingEl = createChild(bankEl, 'h3');
       headingEl.innerHTML = `BANK ${parseInt(bankIdx, 8)}`;
@@ -10920,9 +10905,7 @@ class AGCErasableMemory extends HTMLElement {
       }
 
       for (let rowIdx = 0; rowIdx < numRows; rowIdx++) {
-        const rowEl = createChild(bankEl, 'div', {
-          id: `row_${rowIdx}`
-        });
+        const rowEl = createChild(bankEl, 'div');
         const rowLabelEl = createChild(rowEl, 'div', {
           classes: ['erasable_row_label']
         });
@@ -10933,20 +10916,6 @@ class AGCErasableMemory extends HTMLElement {
           const addressOctal = `00${address.toString(8)}`.slice(-3);
           const label = registerSpec[type][address];
           const wordElClasses = ['word'];
-
-          if (address >= 0o24 && address < 0o61) {
-            // "The registers at addresses 24-61 are generically referred to as 'counters'"
-            // See https://www.ibiblio.org/apollo/assembly_language_manual.html#CPU_Architecture_Registers
-            // MKF: Looks like 0o61 is not included in that range.
-            wordElClasses.push('register_type_counter');
-          }
-
-          if (address >= 0o00 && address <= 0o07) {
-            // "Registers from addresses 00-07 are flip-flops"
-            // See https://www.ibiblio.org/apollo/assembly_language_manual.html#CPU_Architecture_Registers
-            wordElClasses.push('register_type_internal');
-          }
-
           if (label) wordElClasses.push('special_register');
           const wordEl = createChild(rowEl, 'div', {
             id: `address_${addressOctal}`,
@@ -11230,11 +11199,8 @@ class AGCChannel extends HTMLElement {
   connectedCallback() {
     const type = this.getAttribute('data-type');
     const channel = parseInt(this.getAttribute('data-channel'), 10);
-    const heading = createChild(this.rootEl, 'h3');
-    heading.innerHTML = `Channel ${channel.toString(8)}`;
 
     for (let i = 0; i < 15; i++) {
-      // bits
       const rowEl = createChild(this.rootEl, 'div', {
         classes: ['row']
       });
@@ -11453,19 +11419,16 @@ class Demo {
 
     _classPrivateMethodGet(this, _showVersion, _showVersion2).call(this);
 
-    document.getElementById('dsky').innerHTML = '';
-    document.getElementById('dsky').appendChild(this.dsky); // this.luminary099Demo();
-
-    document.getElementById('clock_divisor').value = 1;
-    document.getElementById('clock_divisor').dispatchEvent(new Event('change'));
+    this.agc.oscillate(1);
     document.getElementById('agc_state').innerHTML = 'running';
   }
 
   luminary099Demo() {
     // Show off; the lamp test and uptime programs of Luminary099.
     document.getElementById('agc_program_selector').value = 'Luminary099.bin';
-    document.getElementById('agc_program_selector').dispatchEvent(new Event('change')); // setTimeout(() => this.dskyPcKeyboardInterface.type('V35 E '), 2000);
-    // setTimeout(() => this.dskyPcKeyboardInterface.type('V16 N65 E '), 12000);
+    document.getElementById('agc_program_selector').dispatchEvent(new Event('change'));
+    setTimeout(() => this.dskyPcKeyboardInterface.type('V35 E '), 2000);
+    setTimeout(() => this.dskyPcKeyboardInterface.type('V16 N65 E '), 12000);
   }
 
 }
@@ -11555,6 +11518,7 @@ function _renderIOChannels2(simType) {
 
 function _createDSKY2() {
   this.dsky = document.createElement('dsky-interface');
+  document.getElementById('dsky').appendChild(this.dsky);
   this.dsky.addEventListener('keypress', ({
     detail
   }) => {
@@ -11571,9 +11535,8 @@ function _configureClockDivisor2() {
     const divisor = _classPrivateMethodGet(this, _getClockDivisor, _getClockDivisor2).call(this);
 
     this.agc.oscillate(divisor);
-    const cycleTimeMs = 1 / (2048000 / 2 / 12); // 1.171875e-05 seconds
-
-    document.getElementById('clock_speed').innerHTML = `${(1 / cycleTimeMs / divisor).toFixed(2)} Hz`;
+    const cycleTimeUs = 11.72;
+    document.getElementById('clock_speed').innerHTML = `${(1 / cycleTimeUs * 1000000 / divisor).toFixed(1)} Hz`;
   });
 }
 
@@ -11609,6 +11572,8 @@ function _configureCPUManipulationButtons2() {
     document.getElementById('agc_state').innerHTML = 'running';
   });
   document.getElementById('button_step').addEventListener('click', () => this.agc.stepCpu(1));
+  document.getElementById('clock_divisor').value = 1;
+  document.getElementById('clock_divisor').dispatchEvent(new Event('change'));
 }
 
 function _getClockDivisor2() {
@@ -11630,14 +11595,14 @@ function getBrowserInfo() {
     os: 'unknown'
   };
   let matches;
-  matches = navigator.userAgent.match(/(Chrome)\/(\d\d)/);
+  matches = navigator.userAgent.match(/(Chrome)\/(\d+)/);
 
   if (matches) {
     result.name = matches[1];
     result.version = parseInt(matches[2]);
   }
 
-  matches = navigator.userAgent.match(/(Firefox)\/(\d\d)/);
+  matches = navigator.userAgent.match(/(Firefox)\/(\d+)/);
 
   if (matches) {
     result.name = matches[1];
@@ -11654,5 +11619,5 @@ window.addEventListener('load', async () => {
   const demo = new Demo();
   demo.run();
 });
-// This file was generated using the build script of webAGC. See https://github.com/michaelfranzl/webAGC
-//# sourceMappingURL=index-6bc48d9c.js.map
+// This file was generated using the build script of the webAGC demo. See https://github.com/michaelfranzl/webAGC
+//# sourceMappingURL=index-7d809e32.js.map

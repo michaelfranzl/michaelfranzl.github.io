@@ -27,24 +27,12 @@ div.word.special_register {
   border-color: black;
 }
 
-div.word.register_type_internal {
-  background-color: #DDEEDD;
-}
-
-div.word.register_type_counter {
-  background-color: #EEEEDD;
-}
-
-div#bank_0 div#row_0 {
-  margin-bottom: 50px;
-}
-
 div.word
 label {
   text-transform: uppercase;
   width: 100%;
   display: inline-block;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: #CCCCCC;
   cursor: pointer;
 }
 

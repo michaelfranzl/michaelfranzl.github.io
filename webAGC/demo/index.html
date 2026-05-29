@@ -2,20 +2,7 @@
     <meta charset="utf-8">
     <title>webAGC Demo</title>
     <meta name="viewport" content="width=480">
-
-    <link rel="preload" as="font" href="./assets/FuturaRenner-Regular.woff2" crossorigin="">
-
     <link rel="stylesheet" href="assets/screen-6d33c72d.css">
-
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-1MMMX2TVVR"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-1MMMX2TVVR');
-    </script>
 
     <!-- <script type="importmap"> -->
     <!--   { -->
@@ -91,7 +78,7 @@
 
     <h3>DiSplay and KeYboard (DSKY) of the AGC</h3>
 
-    <div id="dsky">Loading...</div>
+    <div id="dsky"></div>
 
     <p>Interact with the DSKY by clicking on its keys, or by typing letters into the input field.
     (The input field may not work on Chromium for Android because of Chromium bug 118639.)</p>
@@ -167,11 +154,9 @@
     <hr>
 
     <h2>Erasable memory</h2>
-    <p>This is a live view on 8 banks of 256 15-bit words of the erasable memory space. Values are
-    displayed in octal notation.  CPU registers are labeled (hover with the mouse to show additional
-    explanations).  Registers 0-7 are flip-flops internal to the CPU and are shaded in
-    green. Registers 0o24-0o60 are "counters" and are shaded in yellow. [See <a href="https://www.ibiblio.org/apollo/assembly_language_manual.html#CPU_Architecture_Registers" target="_blank">VirtualAGC website</a>]
-    </p><div id="agc_erasable_memory"></div>
+    <p>This is a live view on 8 banks of 256 15-bit words in octal notation. CPU registers are
+    located in the erasable memory and are labeled.</p>
+    <div id="agc_erasable_memory"></div>
   
 
-<script type="module" src="./index-6bc48d9c.js"></script></body></html>
+<script type="module" src="./index-7d809e32.js"></script></body></html>
